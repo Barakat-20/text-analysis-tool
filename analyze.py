@@ -5,8 +5,32 @@ def welcomeuser():
 
 #Get username
 def getusername():
-    # Get input user into the terminal
-    Greetings = input("\nTo begin, please enter your username:\n")
+
+    maxAttempts = 3
+    attempts = 0
+
+    while attempts < maxAttempts:
+        # Print message prompting user to input their name
+        inputPrompt = ""
+        if attempts == 0:
+            inputPrompt = "\nTo begin, please enter your username:\n"
+        else:
+            inputPrompt = "\nPlease try again:\n"
+        Greetings = input(inputPrompt)
+
+        #Validate username
+        if len(Greetings) < 5 or not Greetings.isidentifier():
+            print("Your username must be at least five characters long, alphanumeric only, have no spaces, and cannot start with a number!")
+        else:
+            return Greetings
+        
+        attempts += 1
+    
+    print("\nExhusted all " + str(maxAttempts) + " attempts, assigning new username...")
+    return generate_username()[0]
+
+    
+
 
     #usernameLessThan5Chars = len(Greetings) < 5
     #print("Less than 5 characters: " + str(usernameLessThan5Chars))
@@ -24,12 +48,6 @@ def getusername():
     
     #or #usernameContainsSpaces or firstCharIsNum# 
 
-    if len(Greetings) < 5 or not Greetings.isidentifier():
-        print("Your username must be at least five characters long, alphanumeric only, have no spaces, and cannot start with a number!")
-        print("Assigning new username...")
-        return generate_username()[0]
-
-    return Greetings
 
 
 # Print message prompting user to input their name
