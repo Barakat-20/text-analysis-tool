@@ -29,56 +29,20 @@ def getusername():
     print("\nExhusted all " + str(maxAttempts) + " attempts, assigning new username...")
     return generate_username()[0]
 
-    
-
-
-    #usernameLessThan5Chars = len(Greetings) < 5
-    #print("Less than 5 characters: " + str(usernameLessThan5Chars))
-
-    #usernameContainsSpaces = " " in Greetings
-    #print("Contains spaces: " + str(usernameContainsSpaces))
-
-    #firstCharIsNum = Greetings[0].isdigit()
-    #print("First char is digit: " + str(firstCharIsNum))
-
-    #isNotValidIdentifier = not Greetings.isidentifier()
-    #print("Is not valid identifier: " + str(isNotValidIdentifier))
-
-    #usernameIsInvalid = usernameLessThan5Chars or isNotValidIdentifier
-    
-    #or #usernameContainsSpaces or firstCharIsNum# 
-
-
-
-# Print message prompting user to input their name
-#print("\nTo begin, please enter your username")
-
- 
-
-
-#Argument function
-#def greetuser(Greetingsx, feelings): 
-    # Greet the user
-    #print("Hello, " + Greetingsx + ", " + feelings)
-    #print("Hey, " + Greetingsx2)
+# Greet the user
 def greetuser(name):
         print("Hello, " + name)
 
-
-#def textvariable():
-    #print("TESTING: " + Greetings)
-
-#def runprogram():
+# Get text from file
+def getArticleText():
+    f = open("files/article.txt", "r")
+    rawText = f.read()
+    f.close()
+    return rawText.replace("\n", " ").replace("\r", "")
 
 welcomeuser()
 Greetings = getusername()
 greetuser(Greetings)
-#Greetings2 = getusername()
-#greetuser(Greetings, "I miss you")
-#greetuser("How are you doing?")
-#textvariable()
-
-#runprogram()
-
-#Greetingsx is a local variable
-#Greetings is a global variable
+articleTextRaw = getArticleText()
+print("GOT:")
+print(articleTextRaw)
