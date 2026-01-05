@@ -1,5 +1,7 @@
 from random_username.generate import generate_username
 from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.stem import WordNetLemmatizer
+wordLemmatizer = WordNetLemmatizer()
 import re
 def welcomeuser():
     print("Welcome to the text analysis tool, I will mine and analyzes a body of text from a file you give me!")
@@ -75,7 +77,7 @@ def cleasneWordList(words):
     for word in words:
         cleasneWord = word.replace(".", "").lower()
         if (not re.search(invalidWordPattern, cleasneWord)) and len(word) > 1:
-            cleasneWords.append(cleasneWord)
+            cleasneWords.append(wordLemmatizer.lemmatize(cleasneWord))
     return cleasneWords
 
 
