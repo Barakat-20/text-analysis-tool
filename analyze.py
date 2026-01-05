@@ -1,11 +1,12 @@
 from random_username.generate import generate_username
+import re
 import nltk
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
-from nltk.corpus import wordnet
+from nltk.corpus import wordnet, stopwords
 from nltk import pos_tag
 wordLemmatizer = WordNetLemmatizer()
-import re
+stopwords = set(stopwords.words('english'))
 
 # Welcome User
 def welcomeuser():
@@ -74,6 +75,7 @@ def getWordsPerSentences(sentences):
     for sentence in sentences:
         totalWords += len(sentence.split(" "))
     return totalWords / len(sentences)
+
 # Convert part of speech from pos_tag function into wordnet compatible pos tag
 posToWordnetTag = {
     'J': wordnet.ADJ,
@@ -95,11 +97,10 @@ def cleasneWordList(posTaggedWordTuples):
     cleasneWords = []
     invalidWordPattern = "[^a-zA-Z-]"
     for posTaggedWordTuple in posTaggedWordTuples:
-        print(posTaggedWordTuple)
         word = posTaggedWordTuple[0]
         pos = posTaggedWordTuple[1]
         cleasneWord = word.replace(".", "").lower()
-        if (not re.search(invalidWordPattern, cleasneWord)) and len(word) > 1:
+        if (not re.search(invalidWordPattern, cleasneWord)) and len(cleasneWord) > 1 and cleasneWord not in stopwords:
             cleasneWords.append(wordLemmatizer.lemmatize(cleasneWord, treebankPosToWordnetPos(pos)))
     return cleasneWords
 
