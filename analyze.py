@@ -1,8 +1,13 @@
 from random_username.generate import generate_username
+import nltk
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
+from nltk import pos_tag
 wordLemmatizer = WordNetLemmatizer()
 import re
+
+# Welcome User
 def welcomeuser():
     print("Welcome to the text analysis tool, I will mine and analyzes a body of text from a file you give me!")
 
@@ -69,15 +74,33 @@ def getWordsPerSentences(sentences):
     for sentence in sentences:
         totalWords += len(sentence.split(" "))
     return totalWords / len(sentences)
+# Convert part of speech from pos_tag function into wordnet compatible pos tag
+posToWordnetTag = {
+    'J': wordnet.ADJ,
+    'V': wordnet.VERB,
+    'N': wordnet.NOUN,
+    'R': wordnet.ADV
+}
 
-# Filter raw tokenizet words list to only include valid english words
-def cleasneWordList(words):
+def treebankPosToWordnetPos(partOfSpeech):
+    posFirstChar = partOfSpeech[0]
+    if posFirstChar in posToWordnetTag:
+        return posToWordnetTag[posFirstChar]
+    return wordnet.NOUN
+
+
+# convert raw list of (word, pos) tuples to a list of strings that
+# only include valid english words
+def cleasneWordList(posTaggedWordTuples):
     cleasneWords = []
     invalidWordPattern = "[^a-zA-Z-]"
-    for word in words:
+    for posTaggedWordTuple in posTaggedWordTuples:
+        print(posTaggedWordTuple)
+        word = posTaggedWordTuple[0]
+        pos = posTaggedWordTuple[1]
         cleasneWord = word.replace(".", "").lower()
         if (not re.search(invalidWordPattern, cleasneWord)) and len(word) > 1:
-            cleasneWords.append(wordLemmatizer.lemmatize(cleasneWord))
+            cleasneWords.append(wordLemmatizer.lemmatize(cleasneWord, treebankPosToWordnetPos(pos)))
     return cleasneWords
 
 
@@ -97,7 +120,9 @@ keySentences = extractKeySentences(articleSentences, stockSearchPattern)
 wordsperSentence = getWordsPerSentences(articleSentences)
 
 # Get Word Analytics 
-articleWordsCleansed = cleasneWordList(articleWords)
+wordPosTagged = pos_tag(articleWords)
+articleWordsCleansed = cleasneWordList(wordPosTagged)
+
 
 # Print for testing
 print("GOT:")
