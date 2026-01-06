@@ -1,6 +1,5 @@
 from random_username.generate import generate_username
-import re
-import nltk
+import re, nltk, json
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet, stopwords
@@ -121,7 +120,7 @@ articleWords = tokenizeWords(articleSentences)
 #Get Sentence Analytics
 stockSearchPattern = "[0-9]|[%$€£]|thousand|million|billion|trillion|profit|loss"
 keySentences = extractKeySentences(articleSentences, stockSearchPattern)
-wordsperSentence = getWordsPerSentences(articleSentences)
+wordsPerSentence = getWordsPerSentences(articleSentences)
 
 # Get Word Analytics 
 wordPosTagged = pos_tag(articleWords)
@@ -129,12 +128,30 @@ articleWordsCleansed = cleasneWordList(wordPosTagged)
 
 #Generate Word Cloud
 separator = " "
+wordCloudFilePath = "results/wordcloud.png"
 wordcloud = WordCloud(width=800, height=400,\
 background_color="white", colormap="viridis", collocations=False).generate(separator.join(articleWordsCleansed))
-wordcloud.to_file("results/wordcloud.png")
+wordcloud.to_file(wordCloudFilePath)
 
 # Run sentiment Analysis
 sentimentReslt = sentimentAnalyzer.polarity_scores(articleTextRaw)
 
+# Collate analysis into one dictionary
+finalReslt = {
+    "username": Greetings,
+   "data": {
+        "keySentences": keySentences,
+        "wordsPerSentence": round(wordsPerSentence, 1),
+        "sentiment": sentimentReslt,
+        "wordCloudFilePath": wordCloudFilePath,
+    },
+    "metadata": {
+        "sentencesAnalyzed": len(articleSentences),
+        "wordAnalyzed": len(articleWordsCleansed),
+    }
+}
+
+finalResultJson = json.dumps(finalReslt, indent=4)
+
 # Print for testing
-print(sentimentReslt)
+print(finalResultJson)
