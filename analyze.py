@@ -4,10 +4,12 @@ import nltk
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet, stopwords
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import pos_tag
 from wordcloud import WordCloud
 wordLemmatizer = WordNetLemmatizer()
 stopwords = set(stopwords.words('english'))
+sentimentAnalyzer = SentimentIntensityAnalyzer()
 
 # Welcome User
 def welcomeuser():
@@ -107,9 +109,9 @@ def cleasneWordList(posTaggedWordTuples):
 
 
 # Get user Details
-#welcomeuser()
-#Greetings = getusername()
-#greetuser(Greetings)
+welcomeuser()
+Greetings = getusername()
+greetuser(Greetings)
 
 #Extract and Tokenize Text
 articleTextRaw = getArticleText()
@@ -127,10 +129,12 @@ articleWordsCleansed = cleasneWordList(wordPosTagged)
 
 #Generate Word Cloud
 separator = " "
-wordcloud = WordCloud(width=800, height=400, random_state=1, \
-background_color="white", colormap="viridis", collocations=False)\
-.generate(separator.join(articleWordsCleansed))
+wordcloud = WordCloud(width=800, height=400,\
+background_color="white", colormap="viridis", collocations=False).generate(separator.join(articleWordsCleansed))
 wordcloud.to_file("results/wordcloud.png")
 
+# Run sentiment Analysis
+sentimentReslt = sentimentAnalyzer.polarity_scores(articleTextRaw)
+
 # Print for testing
-print("DONE!")
+print(sentimentReslt)
