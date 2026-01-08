@@ -21,7 +21,6 @@ def extractBasicInfo(company):
     basicInfo = {}
     for key in keysToExtract:
         basicInfo[key] = data.get(key, '')
-
     return basicInfo
 
 def getPriceHistory(company):
@@ -61,8 +60,6 @@ def extractNewsArticleTextFromHtml(soup):
         allText += res.text
     return allText
 
-
-
 headers = {
     'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36'
 }
@@ -90,8 +87,14 @@ def getCompanyStockInfo(tickerSymbol):
     newsArticlesAllText = extractCompanyNewsArticles(newsArticles)
     newsTextanalysis = analyze.analyzeText(newsArticlesAllText)
 
-    finalResultJson = json.dumps(newsTextanalysis, indent=4)
-    # Print for testing
-    print(finalResultJson)
+    finalStockAnalysis = {
+        'basicInfo': basicInfo,
+        'priceHistory': priceHistory,
+        'futureEarningsDates': futureEarningsDates,
+        'newsArticles': newsArticles,
+        'newsTextAnalysis': newsTextanalysis
+    }
+    return finalStockAnalysis
 
-getCompanyStockInfo('MSFT')
+#companyStockAnalysis = getCompanyStockInfo('MSFT')
+#print(json.dumps(companyStockAnalysis, indent=4))
