@@ -13,12 +13,12 @@ app = Flask(__name__)
 def healthCheck():
     return 'Flask server is up and running'
 
-@app.route('/analyze-stock')
-def analyzeStock():
-    return {'data': 'Analysis coming soon'}
+@app.route('/analyze-stock/<ticker>')
+def analyzeStock(ticker):
+    return {'data': 'Analysis for ' + ticker + ' coming soon'}
 
 # main driver function
 if __name__ == '__main__':
     # run() method of Flask class runs the application
     # on the local development server.
-    app.run()
+    app.run(port=5001)
