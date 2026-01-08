@@ -1,8 +1,10 @@
 import yfinance as yf
 import requests
 import time
-from datetime import datetime, date
+from datetime import datetime
 from bs4 import BeautifulSoup
+import analyze
+import json
 
 def extractBasicInfo(company):
     data = company.fast_info
@@ -72,9 +74,6 @@ def extractCompanyNewsArticles(newsArticles):
         page = requests.get(url, headers=headers)
         soup = BeautifulSoup(page.text, 'html.parser')
         if not soup.find_all(string='Continue reading'):
-            print('Tag found - should skip')
-        else:
-            print('Tag not found, don\'t skip')
             allArticlesText += extractNewsArticleTextFromHtml(soup)
     return allArticlesText
 
@@ -89,6 +88,10 @@ def getCompanyStockInfo(tickerSymbol):
     futureEarningsDates = getEarningsDates(company)
     newsArticles = getCompanyNews(company)
     newsArticlesAllText = extractCompanyNewsArticles(newsArticles)
-    print(newsArticlesAllText)
+    newsTextanalysis = analyze.analyzeText(newsArticlesAllText)
+
+    finalResultJson = json.dumps(newsTextanalysis, indent=4)
+    # Print for testing
+    print(finalResultJson)
 
 getCompanyStockInfo('MSFT')
