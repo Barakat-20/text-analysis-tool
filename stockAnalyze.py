@@ -2,6 +2,8 @@ import yfinance as yf
 import requests
 import time
 from datetime import datetime, date
+from bs4 import BeautifulSoup
+
 def extractBasicInfo(company):
     data = company.fast_info
 
@@ -55,10 +57,14 @@ headers = {
 }
 
 def extractCompanyNewsArticles(newsArticles):
-    url = newsArticles[0]['link']
-    page = requests.get(url, headers=headers)
-    print(page.text)
-
+    for newsArticle in newsArticles:
+        url = newsArticle['link']
+        page = requests.get(url, headers=headers)
+        soup = BeautifulSoup(page.text, 'html.parser')
+        if soup.find_all(string="Continue reading"):
+            print("Tag found - should skip")
+        else:
+            print("Tag not found, don't skip")
 
 def getCompanyStockInfo(tickerSymbol):
 # Get data from Yahoo Finance API
