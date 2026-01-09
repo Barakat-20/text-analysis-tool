@@ -2,6 +2,7 @@
 # An object of Flask class is our WSGI application.
 from flask import Flask, abort
 from stockAnalyze import getCompanyStockInfo
+import time
 
 # Flask constructor takes the name of
 # current module (__name__) as argument.
@@ -16,14 +17,18 @@ def healthCheck():
 
 @app.route('/analyze-stock/<ticker>')
 def analyzeStock(ticker):
-    ticker
     if len(ticker) > 5 or not ticker.isidentifier():
         abort(400, 'Invalid ticker symbol')
-    analysis = getCompanyStockInfo(ticker) 
+    try:
+        return getCompanyStockInfo(ticker)
+    except NameError as e:
+        abort(404, e)
+    except:
+        abort(500, 'Something went wrong running the stock analysis.')
     return analysis
 
 # main driver function
 if __name__ == '__main__':
     # run() method of Flask class runs the application
     # on the local development server.
-    app.run(port=5005)
+    app.run(port=5009)
