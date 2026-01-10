@@ -11,6 +11,7 @@ def extractBasicInfo(company):
 
     keysToExtract = [
         'longName',
+        'website',
         'sector',
         'fullTimeEmployees',
         'marketCap',
@@ -33,13 +34,13 @@ def getPriceHistory(company):
     }
 
 def getEarningsDates(company):
-    earningDatesDf = company.earnings_dates
-    allDates = earningDatesDf.index.strftime('%Y-%m-%d').tolist()
-    date_objects = [datetime.strptime(d, '%Y-%m-%d') for d in allDates]
+    earningsDatesDf = company.earnings_dates
+    allDates = earningsDatesDf.index.strftime('%Y-%m-%d').tolist()
+    dateObjects = [datetime.strptime(date, '%Y-%m-%d') for date in allDates]
     currentDate = datetime.now()
-    futureDates = [d for d in date_objects if d > currentDate]
-    futureDatesStr = [d.strftime('%Y-%m-%d') for d in futureDates]
-    return futureDatesStr
+    futureDates = [date.strftime('%Y-%m-%d') for date in dateObjects if date > currentDate]
+    return futureDates
+
 
 def getCompanyNews(company):
     newsList = company.news
@@ -68,19 +69,24 @@ def extractCompanyNewsArticles(newsArticles):
     allArticlesText = ''
     for newsArticle in newsArticles:
         url = newsArticle['link']
-        page = requests.get(url, headers=headers)
-        soup = BeautifulSoup(page.text, 'html.parser')
-        if not soup.find_all(string='Continue reading'):
-            allArticlesText += extractNewsArticleTextFromHtml(soup)
+        try:
+            page = requests.get(url, headers=headers, timeout=10)
+            soup = BeautifulSoup(page.text, 'html.parser')
+
+            if not soup.find_all(string='Continue reading'):
+                allArticlesText += extractNewsArticleTextFromHtml(soup)
+        except Exception as e:
+            print(f"Failed to process article {url}: {e}")
+            continue
     return allArticlesText
+
 
 def getCompanyStockInfo(tickerSymbol):
     # Get data from yfinance API
     company = yf.Ticker(tickerSymbol)
 
     # Get basic info on company
-    basicInfo = extractBasicInfo(company)
-    time.sleep(2)
+    basicInfo = extractBasicInfo(company.info)
 
     # Validate company existence
     if not basicInfo.get["longName"]:
