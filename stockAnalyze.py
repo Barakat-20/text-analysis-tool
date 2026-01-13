@@ -6,8 +6,7 @@ from bs4 import BeautifulSoup
 import analyze
 import json
 
-def extractBasicInfo(company):
-    data = company.fast_info
+def extractBasicInfo(data):
 
     keysToExtract = [
         'longName',
@@ -21,7 +20,10 @@ def extractBasicInfo(company):
 
     basicInfo = {}
     for key in keysToExtract:
-        basicInfo[key] = data.get(key, '')
+        if key in data:
+            basicInfo[key] = data[key]
+        else:
+            basicInfo[key] = ''
     return basicInfo
 
 def getPriceHistory(company):
@@ -46,10 +48,9 @@ def getCompanyNews(company):
     newsList = company.news
     allNewsArticles =[]
     for newsDict in newsList:
-        content = newsDict.get('content', {})
         newsDictToAdd = {
-            'title': content.get('title', ''),
-            'link': content.get('canonicalUrl', {}).get('url', '')
+            'title': newsDict['content']['title'],
+            'link': newsDict['content']['canonicalUrl']['url']
         }
         allNewsArticles.append(newsDictToAdd)
     return allNewsArticles
@@ -69,18 +70,12 @@ def extractCompanyNewsArticles(newsArticles):
     allArticlesText = ''
     for newsArticle in newsArticles:
         url = newsArticle['link']
-        try:
-            page = requests.get(url, headers=headers, timeout=10)
-            soup = BeautifulSoup(page.text, 'html.parser')
-
-            if not soup.find_all(string='Continue reading'):
-                allArticlesText += extractNewsArticleTextFromHtml(soup)
-        except Exception as e:
-            print(f"Failed to process article {url}: {e}")
-            continue
+        page = requests.get(url, headers=headers)
+        soup = BeautifulSoup(page.text, 'html.parser')
+        if not soup.find_all(string='Continue reading'):
+            allArticlesText += extractNewsArticleTextFromHtml(soup)
     return allArticlesText
-
-
+    
 def getCompanyStockInfo(tickerSymbol):
     # Get data from yfinance API
     company = yf.Ticker(tickerSymbol)
@@ -89,7 +84,7 @@ def getCompanyStockInfo(tickerSymbol):
     basicInfo = extractBasicInfo(company.info)
 
     # Validate company existence
-    if not basicInfo.get["longName"]:
+    if not basicInfo["longName"]:
         raise NameError(
             "Could not find stock info, ticker may be delisted or does not exist."
         )
@@ -109,5 +104,5 @@ def getCompanyStockInfo(tickerSymbol):
     }
     return finalStockAnalysis
 
-#companyStockAnalysis = getCompanyStockInfo('MSFT')
-#print(json.dumps(companyStockAnalysis, indent=4))
+# companyStockAnalysis = getCompanyStockInfo('MSFT')
+# print(json.dumps(companyStockAnalysis, indent=4))
