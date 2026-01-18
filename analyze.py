@@ -9,6 +9,8 @@ from wordcloud import WordCloud
 wordLemmatizer = WordNetLemmatizer()
 stopwords = set(stopwords.words('english'))
 sentimentAnalyzer = SentimentIntensityAnalyzer()
+from io import BytesIO
+import base64
 
 # Welcome User
 def welcomeuser():
@@ -124,7 +126,19 @@ def analyzeText(textToAnalyze):
     wordCloudFilePath = "results/wordcloud.png"
     wordcloud = WordCloud(width=800, height=400,\
     background_color="white", colormap="viridis", collocations=False).generate(separator.join(articleWordsCleansed))
-    wordcloud.to_file(wordCloudFilePath)
+    # wordcloud.to_file(wordCloudFilePath)
+
+   # Convert WordCloud → PIL Image
+    image = wordcloud.to_image()
+
+    # Save image to memory buffer
+    imgIO = BytesIO()
+    image.save(imgIO, format="PNG")
+    imgIO.seek(0)
+
+    # Encode as Base64
+    encodedWordCloud = base64.b64encode(imgIO.read()).decode("utf-8")
+
 
     # Run sentiment Analysis
     sentimentReslt = sentimentAnalyzer.polarity_scores(textToAnalyze)
@@ -136,6 +150,7 @@ def analyzeText(textToAnalyze):
             "wordsPerSentence": round(wordsPerSentence, 1),
             "sentiment": sentimentReslt,
             "wordCloudFilePath": wordCloudFilePath,
+            "wordCloudImage": encodedWordCloud
         },
         "metadata": {
             "sentencesAnalyzed": len(articleSentences),
