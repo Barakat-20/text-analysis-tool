@@ -6,8 +6,11 @@ from nltk.corpus import wordnet, stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk import pos_tag
 from wordcloud import WordCloud
+# NLTK DATA PATH (Render)
+nltk.data.path.append("/opt/render/nltk_data")
+
 wordLemmatizer = WordNetLemmatizer()
-stopwords = set(stopwords.words('english'))
+STOP_WORDS = set(stopwords.words('english'))
 sentimentAnalyzer = SentimentIntensityAnalyzer()
 from io import BytesIO
 import base64
@@ -104,7 +107,7 @@ def cleasneWordList(posTaggedWordTuples):
         word = posTaggedWordTuple[0]
         pos = posTaggedWordTuple[1]
         cleasneWord = word.replace(".", "").lower()
-        if (not re.search(invalidWordPattern, cleasneWord)) and len(cleasneWord) > 1 and cleasneWord not in stopwords:
+        if (not re.search(invalidWordPattern, cleasneWord)) and len(cleasneWord) > 1 and cleasneWord not in STOP_WORDS:
             cleasneWords.append(wordLemmatizer.lemmatize(cleasneWord, treebankPosToWordnetPos(pos)))
     return cleasneWords
 
