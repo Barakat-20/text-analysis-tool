@@ -4,13 +4,15 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet, stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from nltk import pos_tag
 from wordcloud import WordCloud
-# NLTK DATA PATH (Render)
-nltk.data.path.append("/opt/render/nltk_data")
-
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('averaged_perceptron_tagger_eng')
+nltk.download ('vader_lexicon')
+nltk.download('punkt_tab')
+nltk.download('punkt')
 wordLemmatizer = WordNetLemmatizer()
-STOP_WORDS = set(stopwords.words('english'))
+stopWords = set(stopwords.words('english'))
 sentimentAnalyzer = SentimentIntensityAnalyzer()
 from io import BytesIO
 import base64
@@ -107,7 +109,7 @@ def cleasneWordList(posTaggedWordTuples):
         word = posTaggedWordTuple[0]
         pos = posTaggedWordTuple[1]
         cleasneWord = word.replace(".", "").lower()
-        if (not re.search(invalidWordPattern, cleasneWord)) and len(cleasneWord) > 1 and cleasneWord not in STOP_WORDS:
+        if (not re.search(invalidWordPattern, cleasneWord)) and len(cleasneWord) > 1 and cleasneWord not in stopWords:
             cleasneWords.append(wordLemmatizer.lemmatize(cleasneWord, treebankPosToWordnetPos(pos)))
     return cleasneWords
 
@@ -121,8 +123,8 @@ def analyzeText(textToAnalyze):
     wordsPerSentence = getWordsPerSentences(articleSentences)
 
     # Get Word Analytics 
-    wordPosTagged = pos_tag(articleWords)
-    articleWordsCleansed = cleasneWordList(wordPosTagged)
+    wordsPosTagged = nltk.pos_tag(articleWords)
+    articleWordsCleansed = cleansedWordList(wordsPosTagged)
 
     #Generate Word Cloud
     separator = " "
